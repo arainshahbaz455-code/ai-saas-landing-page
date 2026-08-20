@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trendex — Financial Insight & HR Management Workspace</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- Vanilla Tilt 3D -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+  <!-- Canvas Confetti for Interactive Celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            body: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#EEF4FF',
+              100: '#E0EBFF',
+              500: '#2563EB',
+              600: '#1D4ED8',
+              700: '#1E40AF',
+              dark: '#080E1E',
+              midnight: '#0C1322',
+            }
+          },
+          boxShadow: {
+            'subtle': '0 2px 10px rgba(0, 0, 0, 0.04), 0 10px 30px rgba(0, 0, 0, 0.04)',
+            'card-hover': '0 20px 40px -15px rgba(37, 99, 235, 0.15)',
+            'glow-cta': '0 0 90px 20px rgba(59, 130, 246, 0.4)',
+          },
+          animation: {
+            'float-slow': 'float 5s ease-in-out infinite',
+            'float-delayed': 'float 6s ease-in-out 2s infinite',
+            'float-fast': 'float 4s ease-in-out 1s infinite',
+            'pulse-glow': 'pulseGlow 4s ease-in-out infinite',
+            'spin-slow': 'spin 12s linear infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+              '50%': { opacity: '0.8', transform: 'scale(1.1)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #FFFFFF;
+      color: #0F172A;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+    .hero-gradient {
+      background: radial-gradient(circle at 50% -20%, #1E293B 0%, #090E1A 60%, #050811 100%);
+    }
+    .glow-overlay {
+      background: radial-gradient(circle 600px at 50% 120%, rgba(59, 130, 246, 0.45), rgba(168, 85, 247, 0.35), rgba(16, 185, 129, 0.2), transparent 75%);
+    }
+    
+    /* Interactive Mouse Spotlight */
+    #hero-spotlight {
+      background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(37, 99, 235, 0.18), transparent 80%);
+    }
+
+    /* Animated SVG Line Drawing */
+    .draw-line {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: drawCurve 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes drawCurve {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Shimmer gradient text */
+    .shimmer-text {
+      background: linear-gradient(90deg, #93C5FD 0%, #FFFFFF 50%, #93C5FD 100%);
+      background-size: 200% auto;
+      color: transparent;
+      -webkit-background-clip: text;
+      animation: textShimmer 4s linear infinite;
+    }
+    @keyframes textShimmer {
+      to { background-position: 200% center; }
+    }
+
+    /* Interactive Card Lift */
+    .interactive-card {
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .interactive-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(37, 99, 235, 0.2);
+    }
+
+    /* Testimonial timer progress bar */
+    .progress-bar-fill {
+      width: 0%;
+      animation: fillTimer 5s linear infinite;
+    }
+    @keyframes fillTimer {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+  </style>
+</head>
+<body class="font-sans antialiased overflow-x-hidden selection:bg-blue-600 selection:text-white">
+
+  <!-- ============================================================== -->
+  <!-- 1. HERO SECTION & TOPBAR WITH 3D TILT & FLOATING BADGES        -->
+  <!-- ============================================================== -->
+  <header id="hero-container" class="hero-gradient text-white relative pt-6 pb-28 md:pb-48 rounded-b-[40px] md:rounded-b-[64px] overflow-hidden">
+    
+    <!-- Interactive Mouse Follower Glow -->
+    <div id="hero-spotlight" class="absolute inset-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- Background Animated Floating Light Orbs -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-blue-600/20 blur-[140px] pointer-events-none animate-pulse-glow"></div>
+
+    <!-- Navigation Bar -->
+    <nav id="navbar-anim" class="max-w-6xl mx-auto px-6 flex items-center justify-between relative z-20 opacity-0 -translate-y-6">
+      <a href="#" class="flex items-center gap-2.5 text-xl font-extrabold tracking-tight text-white group">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-700 to-blue-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 group-hover:rotate-12 transition-transform duration-300">
+          <i data-lucide="sparkle" class="w-4 h-4 fill-white"></i>
+        </div>
+        <span>Trendex</span>
+      </a>
+
+      <!-- Menu Links -->
+      <div class="hidden md:flex items-center gap-1 bg-white/[0.07] border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-md text-sm text-slate-300 shadow-inner">
+        <a href="#home" class="px-3.5 py-1 rounded-full text-white bg-white/15 font-medium transition-all">Home</a>
+        <a href="#about" class="px-3.5 py-1 hover:text-white transition-colors">About</a>
+        <a href="#service" class="px-3.5 py-1 hover:text-white transition-colors">Service</a>
+        <a href="#features" class="px-3.5 py-1 hover:text-white transition-colors">Features</a>
+        <a href="#pricing" class="px-3.5 py-1 hover:text-white transition-colors">Pricing</a>
+      </div>
+
+      <!-- Header CTA with Magnetic Hover -->
+      <a href="#pricing" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-slate-950 text-xs md:text-sm font-bold hover:bg-slate-100 hover:shadow-xl hover:scale-105 active:scale-95 transition-all">
+        Get Started <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+      </a>
+    </nav>
+
+    <!-- Hero Titles & Subtitle -->
+    <div class="max-w-4xl mx-auto text-center px-6 pt-16 md:pt-20 pb-12 relative z-10">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/20 text-xs font-semibold text-blue-300 mb-6 backdrop-blur-md animate-float-slow">
+        <span class="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
+        <span>Version 2.4 is Live &bull; Smarter HR Workflow</span>
+      </div>
+
+      <h1 id="hero-title" class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.12] text-white opacity-0 translate-y-8">
+        Enhance Your Financial Insight<br class="hidden sm:block">
+        <span class="shimmer-text">With Powerful Tools</span>
+      </h1>
+      
+      <p id="hero-subtitle" class="mt-6 text-sm sm:text-base md:text-lg text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed opacity-0 translate-y-8">
+        Modern solutions for smarter decisions, real-time data, and effortless control over your financial future.
+      </p>
+
+      <!-- Action Buttons -->
+      <div id="hero-cta" class="mt-8 flex flex-wrap items-center justify-center gap-4 opacity-0 translate-y-8">
+        <a href="#pricing" class="px-7 py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold hover:shadow-2xl hover:shadow-blue-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+          Get Started <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+        <a href="#demo" class="px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/15 text-white text-sm font-medium border border-white/15 backdrop-blur-md transition-all flex items-center gap-2 hover:scale-105 active:scale-95">
+          Watch Demo <i data-lucide="play" class="w-3.5 h-3.5 fill-white text-white"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- REALISTIC DASHBOARD MOCKUP + 3D TILT + LIVE FLOATING BADGES    -->
+    <!-- ============================================================== -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 relative z-30 mt-4">
+      
+      <!-- FLOATING BADGE LEFT (Animated Live Pill) -->
+      <div class="hidden md:flex absolute -left-6 top-1/4 z-40 p-3 rounded-2xl bg-slate-900/90 border border-slate-700 text-white shadow-2xl backdrop-blur-md items-center gap-3 animate-float-slow">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+          <i data-lucide="check-circle" class="w-5 h-5"></i>
+        </div>
+        <div class="text-xs">
+          <div class="font-bold text-slate-100">Payroll Processed</div>
+          <div class="text-[10px] text-emerald-400 font-mono font-medium">$61,568.00 Completed</div>
+        </div>
+      </div>
+
+      <!-- FLOATING BADGE RIGHT (Animated Live Pill) -->
+      <div class="hidden md:flex absolute -right-6 bottom-1/4 z-40 p-3 rounded-2xl bg-slate-900/90 border border-slate-700 text-white shadow-2xl backdrop-blur-md items-center gap-3 animate-float-delayed">
+        <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+          <i data-lucide="user-plus" class="w-5 h-5"></i>
+        </div>
+        <div class="text-xs">
+          <div class="font-bold text-slate-100">New Candidate</div>
+          <div class="text-[10px] text-slate-400">Sarah Jenkins &bull; Product Design</div>
+        </div>
+      </div>
+
+      <!-- Main Dashboard Container with 3D Mouse Parallax -->
+      <div id="hero-mockup" data-tilt data-tilt-max="3" data-tilt-speed="1000" data-tilt-perspective="1200" class="bg-white rounded-2xl md:rounded-3xl shadow-2xl border border-slate-200/80 p-3 md:p-6 text-slate-800 opacity-0 translate-y-16 will-change-transform">
+        
+        <!-- Mockup Top Bar -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-base shadow-md shadow-blue-500/30">
+              <i data-lucide="sparkle" class="w-5 h-5 fill-white"></i>
+            </div>
+            <div>
+              <div class="font-bold text-base md:text-lg text-slate-900 flex items-center gap-1.5">
+                Good Morning, Opndoo <span class="text-amber-400">👋</span>
+              </div>
+              <div class="text-xs text-slate-400 font-medium">Thursday, 8 May 2025</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5 self-end sm:self-center">
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-medium text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-500"></i>
+              <span>1 Oct - 30 Oct 2024</span>
+              <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+            </div>
+            <button onclick="triggerConfetti()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 active:scale-95 transition-all shadow-sm">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Export</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mockup Main Body Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-5">
+          
+          <!-- Mini Sidebar -->
+          <div class="hidden lg:block lg:col-span-3 space-y-1 pr-3 border-r border-slate-100 text-xs font-medium text-slate-500">
+            <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold shadow-sm">
+              <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors">
+              <i data-lucide="clock" class="w-4 h-4 text-slate-400"></i> Attendance
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors">
+              <i data-lucide="users" class="w-4 h-4 text-slate-400"></i> Employees
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors">
+              <i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i> Departments
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors">
+              <i data-lucide="wallet" class="w-4 h-4 text-slate-400"></i> Payroll
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors">
+              <i data-lucide="briefcase" class="w-4 h-4 text-slate-400"></i> Jobs
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors">
+              <i data-lucide="user-check" class="w-4 h-4 text-slate-400"></i> Candidates
+            </a>
+          </div>
+
+          <!-- Main Stats & Charts Area -->
+          <div class="lg:col-span-9 space-y-5">
+            
+            <!-- 4 Top KPI Stats Cards with Animated Counters -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              
+              <div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-white hover:shadow-md transition-all group">
+                <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                  <span class="flex items-center gap-1.5"><i data-lucide="users" class="w-3.5 h-3.5 text-blue-600"></i> Total Employee</span>
+                  <span class="text-emerald-600 font-semibold text-[10px]">▲ 23%</span>
+                </div>
+                <div class="text-xl font-extrabold text-slate-900 mt-1 count-up" data-target="5431">0</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Update: 8 May 2025</div>
+              </div>
+
+              <div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-white hover:shadow-md transition-all group">
+                <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                  <span class="flex items-center gap-1.5"><i data-lucide="user-plus" class="w-3.5 h-3.5 text-sky-500"></i> Active Applicants</span>
+                  <span class="text-emerald-600 font-semibold text-[10px]">▲ 20%</span>
+                </div>
+                <div class="text-xl font-extrabold text-slate-900 mt-1 count-up" data-target="11823">0</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Update: 8 May 2025</div>
+              </div>
+
+              <div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-white hover:shadow-md transition-all group">
+                <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                  <span class="flex items-center gap-1.5"><i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-500"></i> New Hires</span>
+                  <span class="text-emerald-600 font-semibold text-[10px]">▲ 24%</span>
+                </div>
+                <div class="text-xl font-extrabold text-slate-900 mt-1 count-up" data-target="420">0</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Update: 8 May 2025</div>
+              </div>
+
+              <div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-white hover:shadow-md transition-all group">
+                <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                  <span class="flex items-center gap-1.5"><i data-lucide="user-x" class="w-3.5 h-3.5 text-red-500"></i> Resigned Staff</span>
+                  <span class="text-red-500 font-semibold text-[10px]">▼ 8%</span>
+                </div>
+                <div class="text-xl font-extrabold text-slate-900 mt-1 count-up" data-target="1253">0</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Update: 8 May 2025</div>
+              </div>
+
+            </div>
+
+            <!-- Bottom Split: Interactive Graph & Schedule Calendar -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+              
+              <!-- Attendance Overview Line Chart with Interactive Tooltip -->
+              <div class="md:col-span-7 p-4 rounded-xl border border-slate-100 bg-white">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+                    <span>Attendance Overview</span>
+                    <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400"></i>
+                  </div>
+                  <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-400"></i>
+                </div>
+
+                <div class="flex items-baseline gap-2 mb-2">
+                  <span class="text-2xl font-extrabold text-slate-900">98.4%</span>
+                  <span class="text-xs font-semibold text-emerald-600">▲ 10%</span>
+                  <span class="text-[11px] text-slate-400">+2% from last month</span>
+                </div>
+
+                <!-- SVG Line Curve with Glow -->
+                <div class="h-28 w-full relative">
+                  <svg viewBox="0 0 300 80" class="w-full h-full overflow-visible">
+                    <defs>
+                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#2563EB" stop-opacity="0.3"/>
+                        <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,60 C40,65 70,30 110,40 C150,50 180,15 220,25 C260,35 280,10 300,15 L300,80 L0,80 Z" fill="url(#chartGrad)" />
+                    <path d="M0,60 C40,65 70,30 110,40 C150,50 180,15 220,25 C260,35 280,10 300,15" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" class="draw-line"/>
+                    <circle cx="220" cy="25" r="5" fill="#2563EB" stroke="#FFFFFF" stroke-width="2" class="cursor-pointer animate-ping"/>
+                    <circle cx="220" cy="25" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="2"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Schedule Calendar Mini Widget -->
+              <div class="md:col-span-5 p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-900">Schedule (17)</span>
+                  <span class="text-[11px] text-blue-600 font-medium cursor-pointer hover:underline">All ▾</span>
+                </div>
+
+                <!-- Mini Calendar Days -->
+                <div class="grid grid-cols-5 gap-1 text-center text-[10px]">
+                  <div class="p-1 rounded-lg hover:bg-white text-slate-400 cursor-pointer transition-colors">Mon<br><strong class="text-slate-700 text-xs">11</strong></div>
+                  <div class="p-1 rounded-lg hover:bg-white text-slate-400 cursor-pointer transition-colors">Tue<br><strong class="text-slate-700 text-xs">12</strong></div>
+                  <div class="p-1 rounded-lg hover:bg-white text-slate-400 cursor-pointer transition-colors">Wed<br><strong class="text-slate-700 text-xs">13</strong></div>
+                  <div class="p-1 rounded-lg bg-blue-600 text-white font-bold shadow-md shadow-blue-500/30 scale-105">Thu<br><strong class="text-xs">14</strong></div>
+                  <div class="p-1 rounded-lg hover:bg-white text-slate-400 cursor-pointer transition-colors">Fri<br><strong class="text-slate-700 text-xs">15</strong></div>
+                </div>
+
+                <!-- Meeting Task Card with Hover Shift -->
+                <div class="p-2.5 rounded-lg bg-white border border-slate-100 shadow-sm space-y-1.5 hover:border-blue-300 transition-colors">
+                  <div class="text-[11px] font-bold text-slate-800">Customer Service Interview</div>
+                  <div class="text-[10px] text-slate-400">20 May, 2025 • 10:00 - 10:30</div>
+                  <div class="flex items-center justify-between pt-1">
+                    <span class="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-medium">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Google Meet
+                    </span>
+                    <div class="flex -space-x-1.5">
+                      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80" class="w-4 h-4 rounded-full border border-white object-cover" alt="User">
+                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&auto=format&fit=crop&q=80" class="w-4 h-4 rounded-full border border-white object-cover" alt="User">
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ============================================================== -->
+  <!-- 2. SHOWCASE YOUR STRENGTHS & METRICS (SCROLL TRIGGERED)        -->
+  <!-- ============================================================== -->
+  <section class="max-w-6xl mx-auto px-6 pt-24 pb-16 scroll-reveal">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      
+      <!-- Left Description -->
+      <div class="lg:col-span-4 space-y-4">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+          Showcase your strengths
+        </h2>
+        <p class="text-sm sm:text-base text-slate-500 leading-relaxed font-body">
+          We combine simplicity and power to help HR teams save time, reduce errors, and focus on what matters most — their people.
+        </p>
+      </div>
+
+      <!-- Center Review Card -->
+      <div class="lg:col-span-4">
+        <div class="p-6 rounded-2xl bg-slate-50/80 border border-slate-100 space-y-4 interactive-card">
+          <div class="flex items-center gap-1 text-amber-400 text-xs font-bold">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            <span class="text-slate-800 ml-1 font-sans">4.9</span>
+            <span class="text-slate-400 font-normal">(Rating)</span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-600 italic leading-relaxed">
+            "Setup was fast — no IT help needed. I was running reports within an hour. User-friendly for admins and staff alike. Perfect for small teams. Docs are secure and easy to access."
+          </p>
+          <div class="pt-2 flex items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" alt="Natalie D." class="w-12 h-12 rounded-xl object-cover shadow-sm">
+            <div>
+              <div class="text-sm font-bold text-slate-900">Natalie D.</div>
+              <div class="text-xs text-slate-400">HR Assistant, PixelCrew</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right 42% Sales Rise & Chart Widget -->
+      <div class="lg:col-span-4">
+        <div class="p-6 rounded-2xl bg-white border border-slate-100 shadow-subtle space-y-4 interactive-card">
+          <div class="flex items-center gap-2 text-xs font-bold text-blue-600">
+            <i data-lucide="sparkle" class="w-4 h-4 fill-blue-600"></i>
+            <span>Trendex</span>
+          </div>
+          <h3 class="text-lg font-extrabold text-slate-900 leading-snug">
+            42% rise in sales follow -up win rate
+          </h3>
+          <p class="text-xs text-slate-500">
+            Public does not participate in payment for order flow as a source of revenue.
+          </p>
+          
+          <div class="pt-2 border-t border-slate-100">
+            <div class="flex items-center justify-between text-xs mb-2">
+              <span class="font-bold text-slate-900">Total Income</span>
+              <div class="flex items-center gap-3 text-[10px] text-slate-400">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-600"></span> This Month</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-300"></span> Last Month</span>
+              </div>
+            </div>
+
+            <!-- Mini Sales Graph Preview -->
+            <div class="h-24 w-full relative">
+              <div class="absolute top-0 right-1/4 bg-blue-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-md animate-bounce">
+                $61,568
+              </div>
+              <svg viewBox="0 0 240 60" class="w-full h-full">
+                <path d="M0,45 Q40,50 80,35 T160,15 T240,25" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" class="draw-line"/>
+                <path d="M0,50 Q40,40 80,45 T160,35 T240,40" fill="none" stroke="#E2E8F0" stroke-width="2" stroke-dasharray="4 4"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3 Big Metric Stats Strip with Animated Numbers -->
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 py-8 border-y border-slate-100">
+      
+      <div class="flex items-center gap-4 group cursor-pointer">
+        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shadow-sm group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all">
+          <i data-lucide="share-2" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="text-3xl font-extrabold text-slate-900 flex items-center">
+            <span class="count-up" data-target="39000">0</span>+
+          </div>
+          <div class="text-xs sm:text-sm text-slate-500 font-medium">Startup ready to connected</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 group cursor-pointer">
+        <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl shadow-sm group-hover:scale-110 group-hover:bg-sky-600 group-hover:text-white transition-all">
+          <i data-lucide="user" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="text-3xl font-extrabold text-slate-900 flex items-center">
+            <span class="count-up" data-target="180">0</span>M+
+          </div>
+          <div class="text-xs sm:text-sm text-slate-500 font-medium">Happy global client</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 group cursor-pointer">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl shadow-sm group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+          <i data-lucide="sparkles" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="text-3xl font-extrabold text-slate-900 flex items-center">
+            <span class="count-up" data-target="5">0</span>.00
+          </div>
+          <div class="text-xs sm:text-sm text-slate-500 font-medium">10k+ rating</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================== -->
+  <!-- 3. PROVEN PROCESS FOR SMARTER HR                               -->
+  <!-- ============================================================== -->
+  <section class="max-w-6xl mx-auto px-6 py-20 scroll-reveal">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        Proven Process for Smarter HR
+      </h2>
+      <p class="mt-3 text-sm sm:text-base text-slate-500">
+        We simplify your HR journey, so you can focus on people, not paperwork.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Step 1 -->
+      <div class="p-8 rounded-2xl bg-slate-50/60 border border-slate-100 interactive-card space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+          <i data-lucide="user-plus" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900">Create your account</h3>
+        <p class="text-xs sm:text-sm text-slate-500 leading-relaxed font-body">
+          Create your free Trendex account and take control of your HR processes. No credit card needed — get started in under a minute.
+        </p>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="p-8 rounded-2xl bg-slate-50/60 border border-slate-100 interactive-card space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+          <i data-lucide="users" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900">Initial Assessment</h3>
+        <p class="text-xs sm:text-sm text-slate-500 leading-relaxed font-body">
+          Start with a quick assessment to grasp your team's HR needs. Gain insights to enhance your workflow.
+        </p>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="p-8 rounded-2xl bg-slate-50/60 border border-slate-100 interactive-card space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+          <i data-lucide="sliders" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900">Customize Plan</h3>
+        <p class="text-xs sm:text-sm text-slate-500 leading-relaxed font-body">
+          Get a tailored HR solution for your company's needs. We adapt to your size, structure, and goals—no one-size-fits-all.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================== -->
+  <!-- 4. POWERFUL FEATURES (WITH INTERACTIVE CLICKABLE CHECKLIST)     -->
+  <!-- ============================================================== -->
+  <section id="features" class="max-w-6xl mx-auto px-6 py-20 scroll-reveal">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+      <div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+          Powerful Features to Simplify<br>HR Management
+        </h2>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-500 max-w-md font-body">
+        Manage onboarding, attendance, performance, and more from one smart dashboard. Trendex helps your HR team work faster, smarter, and with total clarity.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      
+      <!-- Feature 1: Smart Onboarding -->
+      <div class="p-6 md:p-8 rounded-3xl bg-slate-50/80 border border-slate-100 space-y-6 interactive-card">
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 text-xs space-y-3">
+          <div class="flex items-center justify-between text-slate-400 text-[11px]">
+            <span>April</span>
+            <span class="font-bold text-slate-800">May 2025</span>
+            <span>June</span>
+          </div>
+          <div class="text-[11px] font-bold text-slate-700">Weekly Report</div>
+          
+          <div class="space-y-2 font-mono text-[10px] text-slate-400">
+            <div class="flex items-center gap-2">
+              <span>8:00</span>
+              <div class="h-px bg-slate-100 flex-1"></div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span>9:00</span>
+              <div class="p-1.5 px-2.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-sans font-medium flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Weekly Team Sync
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span>10:00</span>
+              <div class="h-px bg-slate-100 flex-1"></div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-blue-600 font-bold">11:00</span>
+              <div class="p-2 px-3 rounded-xl bg-slate-900 text-white font-sans flex items-center justify-between gap-3 shadow-md w-full">
+                <span class="font-semibold text-xs">Onboarding Session</span>
+                <div class="flex -space-x-1.5">
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&auto=format&fit=crop&q=80" class="w-5 h-5 rounded-full border border-slate-900 object-cover" alt="User">
+                  <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&auto=format&fit=crop&q=80" class="w-5 h-5 rounded-full border border-slate-900 object-cover" alt="User">
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span>12:00</span>
+              <div class="p-1 px-2 rounded-lg bg-sky-100 text-sky-800 font-sans text-[10px]">
+                Daily Meeting
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">Smart Onboarding</h3>
+          <p class="text-xs sm:text-sm text-slate-500 leading-relaxed font-body">
+            Seamlessly welcome new hires with automated checklists and document flows. Ensure a smooth, consistent experience for every team member.
+          </p>
+        </div>
+      </div>
+
+      <!-- Feature 2: Time & Attendance Tracking with Interactive Rows -->
+      <div class="p-6 md:p-8 rounded-3xl bg-slate-50/80 border border-slate-100 space-y-6 interactive-card">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-xs overflow-x-auto">
+          <div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-100">
+            <div class="flex items-center gap-1.5 font-bold text-blue-600 text-xs">
+              <i data-lucide="sparkle" class="w-3.5 h-3.5 fill-blue-600"></i> Trendex
+            </div>
+            <div class="flex items-center gap-1 text-[11px] text-slate-400">
+              <i data-lucide="search" class="w-3 h-3"></i> Search
+            </div>
+          </div>
+
+          <table class="w-full text-left text-[11px]">
+            <thead>
+              <tr class="text-slate-400 font-medium">
+                <th class="pb-2">Name</th>
+                <th class="pb-2">Job Position</th>
+                <th class="pb-2">Department</th>
+                <th class="pb-2">Salary</th>
+                <th class="pb-2">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-700">
+              <tr onclick="toggleTableRow(this)" class="hover:bg-slate-50/80 transition-colors cursor-pointer">
+                <td class="py-2 flex items-center gap-1.5 font-medium text-slate-900">
+                  <input type="checkbox" checked class="rounded text-blue-600 pointer-events-none"> Jems R.
+                </td>
+                <td class="py-2 text-slate-500">Head of Design</td>
+                <td class="py-2 text-slate-500">Product</td>
+                <td class="py-2 font-mono">$4000.00</td>
+                <td class="py-2"><span class="status-pill px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-semibold">Active</span></td>
+              </tr>
+              <tr onclick="toggleTableRow(this)" class="hover:bg-slate-50/80 transition-colors cursor-pointer">
+                <td class="py-2 flex items-center gap-1.5 font-medium text-slate-900">
+                  <input type="checkbox" class="rounded text-blue-600 pointer-events-none"> Jidan D.
+                </td>
+                <td class="py-2 text-slate-500">Lead Website</td>
+                <td class="py-2 text-slate-500">Product</td>
+                <td class="py-2 font-mono">$4000.00</td>
+                <td class="py-2"><span class="status-pill px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-semibold">Active</span></td>
+              </tr>
+              <tr onclick="toggleTableRow(this)" class="hover:bg-slate-50/80 transition-colors cursor-pointer">
+                <td class="py-2 flex items-center gap-1.5 font-medium text-slate-900">
+                  <input type="checkbox" class="rounded text-blue-600 pointer-events-none"> Emily J.
+                </td>
+                <td class="py-2 text-slate-500">Engineer</td>
+                <td class="py-2 text-slate-500">Engineering</td>
+                <td class="py-2 font-mono">$4000.00</td>
+                <td class="py-2"><span class="status-pill px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-semibold">Active</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">Time & Attendance Tracking</h3>
+          <p class="text-xs sm:text-sm text-slate-500 leading-relaxed font-body">
+            Track employee hours, absences, and time-off requests in real time. Gain complete visibility and reduce manual errors.
+          </p>
+        </div>
+      </div>
+
+      <!-- Feature 3: Performance Management (Animated Circular Ring) -->
+      <div class="p-6 md:p-8 rounded-3xl bg-slate-50/80 border border-slate-100 space-y-6 interactive-card">
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center justify-between gap-4">
+          <div class="space-y-3">
+            <div class="text-xs font-bold text-slate-900">Track progress</div>
+            <div class="flex items-center gap-2">
+              <div class="flex -space-x-2">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80" class="w-6 h-6 rounded-full border border-white object-cover" alt="User">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&auto=format&fit=crop&q=80" class="w-6 h-6 rounded-full border border-white object-cover" alt="User">
+                <div class="w-6 h-6 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold border border-white">+</div>
+              </div>
+            </div>
+            <div class="text-[10px] text-slate-400 space-y-1">
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-600"></span> 80% Task Complete</div>
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-slate-200"></span> 20% Uncompleted</div>
+            </div>
+          </div>
+
+          <!-- Circular SVG Radial Animation -->
+          <div class="relative w-28 h-28 flex items-center justify-center">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+              <path class="text-slate-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path id="progress-radial" class="text-blue-600 transition-all duration-1000" stroke-dasharray="80, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <div class="absolute text-center">
+              <span class="text-xl font-extrabold text-slate-900">80%</span>
+              <div class="text-[9px] text-slate-400 font-medium">Work Complete</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">Performance Management</h3>
+          <p class="text-xs sm:text-sm text-slate-500 leading-relaxed font-body">
+            Set goals, conduct reviews, and track progress all in one place. Empower teams with transparent feedback and clear growth paths.
+          </p>
+        </div>
+      </div>
+
+      <!-- Feature 4: Leave & Attendance Matrix -->
+      <div class="p-6 md:p-8 rounded-3xl bg-slate-50/80 border border-slate-100 space-y-6 interactive-card">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 space-y-2">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-900">
+            <div>
+              May 2025
+              <span class="text-[11px] text-emerald-600 font-normal ml-2">94% ▲ +3.11%</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-normal">This Week ▾</span>
+          </div>
+
+          <!-- Heatmap Grid -->
+          <div class="grid grid-cols-7 gap-1 pt-2">
+            <div class="h-5 rounded bg-blue-100 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-500 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-600 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-400 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-600 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-slate-100 hover:scale-125 hover:bg-slate-300 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-slate-100 hover:scale-125 hover:bg-slate-300 transition-all cursor-pointer"></div>
+            
+            <div class="h-5 rounded bg-blue-400 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-600 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-500 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-600 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-300 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-slate-100 hover:scale-125 hover:bg-slate-300 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-slate-100 hover:scale-125 hover:bg-slate-300 transition-all cursor-pointer"></div>
+
+            <div class="h-5 rounded bg-blue-600 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-600 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-400 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-500 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-blue-600 hover:scale-125 hover:bg-blue-700 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-slate-100 hover:scale-125 hover:bg-slate-300 transition-all cursor-pointer"></div>
+            <div class="h-5 rounded bg-slate-100 hover:scale-125 hover:bg-slate-300 transition-all cursor-pointer"></div>
+          </div>
+          <div class="flex justify-between text-[9px] text-slate-400 pt-1">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">Leave & Attendance</h3>
+          <p class="text-xs sm:text-sm text-slate-500 leading-relaxed font-body">
+            Easily manage time-off requests, holidays, and sick leave in one place. Automated tracking reduces admin work and keeps teams in sync.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================== -->
+  <!-- 5. TESTIMONIAL SLIDER WITH AUTO-PLAY & TIMER BAR               -->
+  <!-- ============================================================== -->
+  <section class="max-w-5xl mx-auto px-6 py-20 scroll-reveal">
+    <div class="text-center max-w-2xl mx-auto mb-14">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        What Our Users Say About Treandex
+      </h2>
+      <p class="mt-3 text-xs sm:text-sm text-slate-500 font-body">
+        Trusted by HR professionals and teams across industries to simplify, streamline, and succeed.
+      </p>
+    </div>
+
+    <!-- Testimonial Big Card -->
+    <div class="bg-slate-50/90 rounded-3xl p-6 sm:p-10 border border-slate-100 grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative shadow-sm overflow-hidden">
+      
+      <!-- Top Auto-play Progress Line -->
+      <div class="absolute top-0 left-0 right-0 h-1 bg-slate-200">
+        <div id="testimonial-progress" class="h-full bg-blue-600 progress-bar-fill"></div>
+      </div>
+
+      <!-- Quote Content -->
+      <div class="md:col-span-7 space-y-6">
+        <p id="testimonial-quote" class="text-base sm:text-xl font-medium text-slate-800 leading-relaxed transition-all duration-300">
+          "Trendex changed the way we handle onboarding. Tasks are now automated and consistent every time. It saved us hours every week. Highly recommend to growing teams."
+        </p>
+
+        <div class="space-y-1">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-600">Outstanding Services</div>
+          <div id="testimonial-author" class="text-lg font-bold text-slate-900">Jidan D.</div>
+          <div class="flex items-center gap-2">
+            <span id="testimonial-role" class="text-xs text-slate-400 font-medium">HR Manager, FinEdge</span>
+            <div class="flex items-center text-amber-400 text-xs">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+              <span class="text-slate-800 ml-1 font-bold text-[11px]">4.9</span>
+              <span class="text-slate-400 text-[10px] ml-0.5">(Rating)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Photo Profile -->
+      <div class="md:col-span-5 flex justify-center">
+        <div class="w-56 h-56 sm:w-64 sm:h-64 rounded-3xl overflow-hidden shadow-md border-4 border-white">
+          <img id="testimonial-img" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80" alt="Jidan D." class="w-full h-full object-cover transition-all duration-300">
+        </div>
+      </div>
+
+      <!-- Navigation Arrows -->
+      <div class="absolute -bottom-5 right-10 flex items-center gap-2">
+        <button onclick="prevTestimonial()" class="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-slate-50 active:scale-90 transition-all shadow-sm">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </button>
+        <button onclick="nextTestimonial()" class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 active:scale-90 transition-all shadow-md shadow-blue-500/30">
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================== -->
+  <!-- 6. PRICING SECTION (MONTHLY / YEARLY TOGGLE)                   -->
+  <!-- ============================================================== -->
+  <section id="pricing" class="max-w-6xl mx-auto px-6 py-20 scroll-reveal">
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        Flexible Pricing for Teams of All Sizes
+      </h2>
+      <p class="mt-3 text-xs sm:text-sm text-slate-500 font-body">
+        Choose a plan that fits your organization's needs — no hidden fees, no long-term contracts.
+      </p>
+
+      <!-- Toggle Switch -->
+      <div class="mt-8 inline-flex items-center p-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-semibold">
+        <button id="btn-monthly" onclick="setBilling('monthly')" class="px-5 py-2 rounded-full bg-blue-600 text-white transition-all shadow-sm">Monthly</button>
+        <button id="btn-yearly" onclick="setBilling('yearly')" class="px-5 py-2 rounded-full text-slate-600 hover:text-slate-900 transition-all">Yearly (-20%)</button>
+      </div>
+    </div>
+
+    <!-- 3 Pricing Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+      
+      <!-- Starter Plan -->
+      <div class="p-8 rounded-3xl bg-white border border-slate-200/80 interactive-card flex flex-col justify-between space-y-6">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Starter Plan</h3>
+          <p class="text-xs text-slate-400 mt-1">Perfect for small teams getting started with HR management.</p>
+          <div class="mt-6 flex items-baseline gap-1">
+            <span class="text-4xl font-extrabold text-slate-900">$0</span>
+            <span class="text-xs text-slate-400 font-medium">/per month</span>
+          </div>
+
+          <div class="mt-6 space-y-3 text-xs text-slate-600 font-body">
+            <div class="font-bold text-slate-900 text-[11px] uppercase tracking-wider">Features:</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Up to 5 team members</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Basic employee records</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Leave & attendance tracking</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Email support</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Community access</div>
+          </div>
+        </div>
+
+        <button onclick="triggerConfetti()" class="w-full py-3 rounded-full border border-slate-300 hover:border-slate-400 text-slate-800 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95">
+          Get Started <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <!-- Professional Plan (Featured) -->
+      <div class="p-8 rounded-3xl bg-white border-2 border-slate-900 shadow-xl relative flex flex-col justify-between space-y-6 interactive-card">
+        <div class="absolute -top-3 right-6 px-3 py-1 rounded-full bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-md">
+          Popular
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Professional</h3>
+          <p class="text-xs text-slate-400 mt-1">Perfect for growing businesses needing complete HR automation.</p>
+          <div class="mt-6 flex items-baseline gap-1">
+            <span id="price-pro" class="text-4xl font-extrabold text-slate-900 transition-all">$49</span>
+            <span class="text-xs text-slate-400 font-medium">/per month</span>
+          </div>
+
+          <div class="mt-6 space-y-3 text-xs text-slate-600 font-body">
+            <div class="font-bold text-slate-900 text-[11px] uppercase tracking-wider">Features:</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Unlimited team members</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Advanced employee analytics</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Automated payroll exports</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Priority email & chat support</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Custom role permissions</div>
+          </div>
+        </div>
+
+        <button onclick="triggerConfetti()" class="w-full py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-lg active:scale-95">
+          Get Started <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <!-- Enterprise Plan -->
+      <div class="p-8 rounded-3xl bg-white border border-slate-200/80 interactive-card flex flex-col justify-between space-y-6">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Enterprise</h3>
+          <p class="text-xs text-slate-400 mt-1">Tailored for large organizations requiring custom integrations & SLA.</p>
+          <div class="mt-6 flex items-baseline gap-1">
+            <span class="text-4xl font-extrabold text-slate-900">$00</span>
+            <span class="text-xs text-slate-400 font-medium">/per month</span>
+          </div>
+
+          <div class="mt-6 space-y-3 text-xs text-slate-600 font-body">
+            <div class="font-bold text-slate-900 text-[11px] uppercase tracking-wider">Features:</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> All Professional features</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Dedicated account manager</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> API access & integrations</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> Advanced security & compliance</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-600"></i> SLA & onboarding support</div>
+          </div>
+        </div>
+
+        <button class="w-full py-3 rounded-full border border-slate-300 hover:border-slate-400 text-slate-800 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95">
+          Contact Sales <i data-lucide="lock" class="w-3 h-3"></i>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================== -->
+  <!-- 7. FREQUENTLY ASKED QUESTIONS (ACCORDION)                      -->
+  <!-- ============================================================== -->
+  <section class="max-w-6xl mx-auto px-6 py-20 scroll-reveal">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      
+      <!-- Left Header -->
+      <div class="lg:col-span-5 space-y-4">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+          Frequently <span class="text-slate-400 font-normal">Asked</span><br>Questions
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 leading-relaxed font-body">
+          Got questions? We've got answers. Here are some of the most common things people ask about Treandex and how we help simplify HR.
+        </p>
+
+        <div class="pt-4">
+          <a href="#contact" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold transition-all shadow-sm">
+            Ask Any Question <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right Accordion List -->
+      <div class="lg:col-span-7 space-y-3">
+        
+        <div class="rounded-2xl border border-slate-200 overflow-hidden transition-all bg-slate-50/50" id="faq-1">
+          <button onclick="toggleFaq(1)" class="w-full p-4 sm:p-5 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-slate-900">
+            <span>What is Trendex?</span>
+            <i data-lucide="chevron-up" id="faq-icon-1" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+          </button>
+          <div id="faq-content-1" class="px-5 pb-5 text-xs sm:text-sm text-slate-500 leading-relaxed font-body">
+            Trendex is an all-in-one HR and Financial workspace designed for modern companies to manage onboarding, attendance, performance reviews, and payroll with zero paperwork.
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 overflow-hidden transition-all" id="faq-2">
+          <button onclick="toggleFaq(2)" class="w-full p-4 sm:p-5 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-slate-900">
+            <span>Is there a free version available?</span>
+            <i data-lucide="chevron-down" id="faq-icon-2" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+          </button>
+          <div id="faq-content-2" class="px-5 pb-5 text-xs sm:text-sm text-slate-500 leading-relaxed font-body hidden">
+            Yes, our Starter Plan is 100% free for teams up to 5 members with full access to core attendance and employee record tracking.
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 overflow-hidden transition-all" id="faq-3">
+          <button onclick="toggleFaq(3)" class="w-full p-4 sm:p-5 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-slate-900">
+            <span>How secure is my data with Trendex?</span>
+            <i data-lucide="chevron-down" id="faq-icon-3" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+          </button>
+          <div id="faq-content-3" class="px-5 pb-5 text-xs sm:text-sm text-slate-500 leading-relaxed font-body hidden">
+            We use bank-grade 256-bit SSL encryption, SOC2 Type II compliance, and automated encrypted cloud backups.
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 overflow-hidden transition-all" id="faq-4">
+          <button onclick="toggleFaq(4)" class="w-full p-4 sm:p-5 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-slate-900">
+            <span>Do you support remote or hybrid teams?</span>
+            <i data-lucide="chevron-down" id="faq-icon-4" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+          </button>
+          <div id="faq-content-4" class="px-5 pb-5 text-xs sm:text-sm text-slate-500 leading-relaxed font-body hidden">
+            Yes! Trendex includes multi-timezone attendance, remote clock-in verification, and asynchronous task workflows.
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 overflow-hidden transition-all" id="faq-5">
+          <button onclick="toggleFaq(5)" class="w-full p-4 sm:p-5 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-slate-900">
+            <span>Can I integrate Trendex with other tools?</span>
+            <i data-lucide="chevron-down" id="faq-icon-5" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+          </button>
+          <div id="faq-content-5" class="px-5 pb-5 text-xs sm:text-sm text-slate-500 leading-relaxed font-body hidden">
+            Trendex connects seamlessly with Slack, Google Workspace, Zoom, Stripe, and QuickBooks via 1-click webhooks.
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 overflow-hidden transition-all" id="faq-6">
+          <button onclick="toggleFaq(6)" class="w-full p-4 sm:p-5 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-slate-900">
+            <span>How long does it take to set up Treandex?</span>
+            <i data-lucide="chevron-down" id="faq-icon-6" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+          </button>
+          <div id="faq-content-6" class="px-5 pb-5 text-xs sm:text-sm text-slate-500 leading-relaxed font-body hidden">
+            Setup takes less than 5 minutes. You can import your employee CSV list and invite your team immediately.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================== -->
+  <!-- 8. BOTTOM CTA BANNER (VIBRANT GLOW WITH PARTICLES)            -->
+  <!-- ============================================================== -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-10 scroll-reveal">
+    <div class="rounded-[36px] md:rounded-[48px] bg-slate-950 text-white p-8 sm:p-14 md:p-20 text-center relative overflow-hidden shadow-glow-cta">
+      
+      <!-- Ambient Glow -->
+      <div class="absolute inset-0 glow-overlay pointer-events-none animate-pulse-glow"></div>
+
+      <!-- Avatar Stack Header -->
+      <div class="relative z-10 flex items-center justify-center -space-x-2.5 mb-6 animate-float-slow">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="w-10 h-10 rounded-full border-2 border-slate-900 object-cover" alt="User">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" class="w-11 h-11 rounded-full border-2 border-slate-900 object-cover z-10" alt="User">
+        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80" class="w-10 h-10 rounded-full border-2 border-slate-900 object-cover" alt="User">
+      </div>
+
+      <!-- Main Headline -->
+      <h2 class="relative z-10 text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white max-w-2xl mx-auto leading-tight">
+        Ready to Simplify Your HR Workflow?
+      </h2>
+
+      <p class="relative z-10 mt-4 text-xs sm:text-sm md:text-base text-slate-300 max-w-xl mx-auto font-body">
+        Streamline your processes, improve efficiency, and focus on what matters most — your team.
+      </p>
+
+      <!-- CTAs -->
+      <div class="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-4">
+        <button onclick="triggerConfetti()" class="px-7 py-3.5 rounded-full bg-white text-slate-950 text-xs sm:text-sm font-bold hover:bg-slate-100 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shadow-2xl">
+          Get Started <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+        <a href="#demo" class="px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-medium border border-white/20 backdrop-blur-md transition-all flex items-center gap-2 hover:scale-105 active:scale-95">
+          Watch Demo <i data-lucide="play" class="w-3.5 h-3.5 fill-white text-white"></i>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================== -->
+  <!-- 9. FOOTER SECTION                                              -->
+  <!-- ============================================================== -->
+  <footer class="max-w-6xl mx-auto px-6 pt-16 pb-12 text-slate-600 text-xs sm:text-sm font-body">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-slate-100">
+      
+      <div class="md:col-span-5 space-y-4">
+        <a href="#" class="flex items-center gap-2 text-lg font-bold text-slate-900 font-sans">
+          <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-sm">
+            <i data-lucide="sparkle" class="w-4 h-4 fill-white"></i>
+          </div>
+          <span>Trendex</span>
+        </a>
+        <p class="text-xs text-slate-400 max-w-sm leading-relaxed">
+          Trendex is a modern HR management platform designed to simplify people operations for growing teams.
+        </p>
+      </div>
+
+      <div class="md:col-span-7 grid grid-cols-3 gap-6 text-xs">
+        <div class="space-y-3">
+          <div class="font-bold text-slate-900 font-sans">Navigation</div>
+          <div class="space-y-2 flex flex-col text-slate-500">
+            <a href="#home" class="hover:text-blue-600 transition-colors">Home</a>
+            <a href="#about" class="hover:text-blue-600 transition-colors">About</a>
+            <a href="#service" class="hover:text-blue-600 transition-colors">Service</a>
+            <a href="#features" class="hover:text-blue-600 transition-colors">Blog</a>
+            <a href="#contact" class="hover:text-blue-600 transition-colors">Contact</a>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="font-bold text-slate-900 font-sans">Company</div>
+          <div class="space-y-2 flex flex-col text-slate-500">
+            <a href="#" class="hover:text-blue-600 transition-colors">About Us</a>
+            <a href="#" class="hover:text-blue-600 transition-colors">Careers</a>
+            <a href="#" class="hover:text-blue-600 transition-colors">Blog</a>
+            <a href="#" class="hover:text-blue-600 transition-colors">Help Center</a>
+            <a href="#" class="hover:text-blue-600 transition-colors">FAQs</a>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="font-bold text-slate-900 font-sans">Product</div>
+          <div class="space-y-2 flex flex-col text-slate-500">
+            <a href="#features" class="hover:text-blue-600 transition-colors">Features</a>
+            <a href="#pricing" class="hover:text-blue-600 transition-colors">Pricing</a>
+            <a href="#" class="hover:text-blue-600 transition-colors">Integrations</a>
+            <a href="#pricing" class="hover:text-blue-600 transition-colors">Free Trial</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      <div>
+        &copy; 2025 Trendex. Designed by <strong class="text-slate-700">Opndoo</strong>
+      </div>
+
+      <div class="flex items-center gap-4 text-slate-400">
+        <a href="#" class="hover:text-blue-600 transition-colors"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+        <a href="#" class="hover:text-blue-600 transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+        <a href="#" class="hover:text-blue-600 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+        <a href="#" class="hover:text-blue-600 transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ============================================================== -->
+  <!-- JAVASCRIPT: ANIMATIONS, SPOTLIGHT & INTERACTIONS               -->
+  <!-- ============================================================== -->
+  <script>
+    // Initialize Icons
+    lucide.createIcons();
+
+    // 1. Mouse Spotlight in Hero
+    const hero = document.getElementById('hero-container');
+    hero.addEventListener('mousemove', (e) => {
+      const rect = hero.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      hero.style.setProperty('--mouse-x', `${x}%`);
+      hero.style.setProperty('--mouse-y', `${y}%`);
+    });
+
+    // 2. Confetti Burst Function for CTA and Celebrations
+    function triggerConfetti() {
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.65 }
+      });
+    }
+
+    // 3. Interactive Table Row Click
+    function toggleTableRow(row) {
+      const checkbox = row.querySelector('input[type="checkbox"]');
+      const pill = row.querySelector('.status-pill');
+      checkbox.checked = !checkbox.checked;
+      
+      if (checkbox.checked) {
+        pill.textContent = 'Active';
+        pill.className = 'status-pill px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-semibold';
+      } else {
+        pill.textContent = 'On Leave';
+        pill.className = 'status-pill px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-semibold';
+      }
+    }
+
+    // 4. GSAP Entrance Timeline & ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const tl = gsap.timeline({ defaults: { ease: "power4.out", duration: 1 } });
+      
+      tl.to("#navbar-anim", { opacity: 1, y: 0, duration: 0.8 })
+        .to("#hero-title", { opacity: 1, y: 0, duration: 1 }, "-=0.5")
+        .to("#hero-subtitle", { opacity: 1, y: 0, duration: 0.8 }, "-=0.6")
+        .to("#hero-cta", { opacity: 1, y: 0, duration: 0.8 }, "-=0.6")
+        .to("#hero-mockup", { opacity: 1, y: 0, duration: 1.2, ease: "back.out(1.2)" }, "-=0.6");
+
+      // Scroll Reveal for sections
+      gsap.utils.toArray('.scroll-reveal').forEach(section => {
+        gsap.from(section, {
+          scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          y: 40,
+          opacity: 0,
+          duration: 0.9,
+          ease: "power3.out"
+        });
+      });
+
+      // Number Counter
+      const counters = document.querySelectorAll('.count-up');
+      counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        ScrollTrigger.create({
+          trigger: counter,
+          start: "top 85%",
+          onEnter: () => {
+            gsap.to(counter, {
+              innerHTML: target,
+              duration: 2,
+              ease: "power2.out",
+              snap: { innerHTML: 1 },
+              onUpdate: function() {
+                counter.innerHTML = Math.ceil(this.targets()[0].innerHTML).toLocaleString();
+              }
+            });
+          }
+        });
+      });
+    });
+
+    // 5. Testimonial Auto-Slider with Progress
+    const testimonials = [
+      {
+        quote: '"Trendex changed the way we handle onboarding. Tasks are now automated and consistent every time. It saved us hours every week. Highly recommend to growing teams."',
+        author: "Jidan D.",
+        role: "HR Manager, FinEdge",
+        img: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80"
+      },
+      {
+        quote: '"The attendance heatmap and Slack integration reduced our HR support tickets by 60%. It is hands down the best investment we made this quarter."',
+        author: "Sarah K.",
+        role: "Head of People, Velo Labs",
+        img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&auto=format&fit=crop&q=80"
+      },
+      {
+        quote: '"Clean UI, lightning fast reports, and effortless payroll calculation. Our entire executive team loves the simplicity of the dashboard."',
+        author: "Marcus Vance",
+        role: "COO, Apex Digital",
+        img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80"
+      }
+    ];
+
+    let currentTestimonial = 0;
+
+    function renderTestimonial(idx) {
+      const qEl = document.getElementById('testimonial-quote');
+      const aEl = document.getElementById('testimonial-author');
+      const rEl = document.getElementById('testimonial-role');
+      const iEl = document.getElementById('testimonial-img');
+
+      gsap.to([qEl, aEl, rEl, iEl], {
+        opacity: 0,
+        y: 8,
+        duration: 0.25,
+        onComplete: () => {
+          qEl.textContent = testimonials[idx].quote;
+          aEl.textContent = testimonials[idx].author;
+          rEl.textContent = testimonials[idx].role;
+          iEl.src = testimonials[idx].img;
+
+          gsap.to([qEl, aEl, rEl, iEl], {
+            opacity: 1,
+            y: 0,
+            duration: 0.35,
+            ease: "power2.out"
+          });
+        }
+      });
+    }
+
+    function nextTestimonial() {
+      currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+      renderTestimonial(currentTestimonial);
+    }
+
+    function prevTestimonial() {
+      currentTestimonial = (currentTestimonial - 1 + testimonials.length) % testimonials.length;
+      renderTestimonial(currentTestimonial);
+    }
+
+    // Auto rotate every 5s
+    setInterval(() => {
+      nextTestimonial();
+    }, 5000);
+
+    // 6. Pricing Toggle
+    function setBilling(type) {
+      const btnMonthly = document.getElementById('btn-monthly');
+      const btnYearly = document.getElementById('btn-yearly');
+      const proPrice = document.getElementById('price-pro');
+
+      if (type === 'yearly') {
+        btnYearly.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+        btnYearly.classList.remove('text-slate-600');
+        btnMonthly.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+        btnMonthly.classList.add('text-slate-600');
+        
+        gsap.to(proPrice, {
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.15,
+          onComplete: () => {
+            proPrice.textContent = '$39';
+            gsap.to(proPrice, { scale: 1, opacity: 1, duration: 0.25, ease: "back.out" });
+          }
+        });
+      } else {
+        btnMonthly.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+        btnMonthly.classList.remove('text-slate-600');
+        btnYearly.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+        btnYearly.classList.add('text-slate-600');
+        
+        gsap.to(proPrice, {
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.15,
+          onComplete: () => {
+            proPrice.textContent = '$49';
+            gsap.to(proPrice, { scale: 1, opacity: 1, duration: 0.25, ease: "back.out" });
+          }
+        });
+      }
+    }
+
+    // 7. Accordion Toggle
+    function toggleFaq(index) {
+      const content = document.getElementById(`faq-content-${index}`);
+      const icon = document.getElementById(`faq-icon-${index}`);
+      const container = document.getElementById(`faq-${index}`);
+      
+      const isHidden = content.classList.contains('hidden');
+
+      for (let i = 1; i <= 6; i++) {
+        const c = document.getElementById(`faq-content-${i}`);
+        const ic = document.getElementById(`faq-icon-${i}`);
+        const parent = document.getElementById(`faq-${i}`);
+        if (c) c.classList.add('hidden');
+        if (ic) ic.style.transform = 'rotate(0deg)';
+        if (parent) parent.classList.remove('bg-slate-50/50');
+      }
+
+      if (isHidden) {
+        content.classList.remove('hidden');
+        gsap.from(content, { opacity: 0, y: -6, duration: 0.3 });
+        icon.style.transform = 'rotate(180deg)';
+        container.classList.add('bg-slate-50/50');
+      }
+    }
+  </script>
+</body>
+</html>
